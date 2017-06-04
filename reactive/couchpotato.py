@@ -5,6 +5,7 @@ from charmhelpers.core import hookenv
 from charmhelpers.core import templating
 
 import os
+import subprocess
 
 @when_not('couchpotato.installed')
 def install_couchpotato():
