@@ -1,6 +1,6 @@
 from charms.reactive import when, when_all, when_not, set_state
+from charmhelpers import fetch
 from charmhelpers.core import host
-from charmhelpers.core import fetch
 from charmhelpers.core import hookenv
 from charmhelpers.core import templating
 
