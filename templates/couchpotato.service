@@ -1,0 +1,14 @@
+[Unit]
+Description=CouchPotato application instance
+After=network.target
+
+[Service]
+ExecStart={{ couchpath }}
+Type=simple
+User={{ couchuser }}
+Group={{ couchuser }}
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

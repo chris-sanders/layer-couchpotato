@@ -1,0 +1,6 @@
+options:
+  couch-user:
+    type: string
+    default: "couchuser"
+    description: "The user account to install couchpotato as"
+  

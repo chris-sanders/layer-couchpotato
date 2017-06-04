@@ -1,0 +1,21 @@
+name: couchpotato
+summary: Couchpotato Server
+maintainer: Chris Sanders <sanders.chris@gmail.com>
+description: |
+  Couchpotato Server installation for relation to sabnzbd charm
+tags:
+  # Replace "misc" with one or more whitelisted tags from this list:
+  # https://jujucharms.com/docs/stable/authors-charm-metadata
+  - misc
+subordinate: false
+series:
+  - xenial
+#provides:
+#  provides-relation:
+#    interface: interface-name
+requires:
+  usenet-downloader:
+    interface: usenet-downloader
+#peers:
+#  peer-relation:
+#    interface: interface-name
