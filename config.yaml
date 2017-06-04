@@ -3,4 +3,7 @@ options:
     type: string
     default: "couchuser"
     description: "The user account to install couchpotato as"
-  
+  port:
+    type: int
+    default: 5050
+    description: "Port that couchpotato listens to"
