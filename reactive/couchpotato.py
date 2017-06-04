@@ -8,6 +8,7 @@ import os
 
 @when_not('couchpotato.installed')
 def install_couchpotato():
+    config = hoookenv.config()
     hookenv.status_set('maintenance','creating user')
     host.adduser(config['couch-user'],home_dir='/home/'+config['couch-user'])
     hookenv.status_set('maintenance','installing dependencies')
