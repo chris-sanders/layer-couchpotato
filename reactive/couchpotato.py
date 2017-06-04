@@ -15,8 +15,6 @@ def install_couchpotato():
     config = hookenv.config()
     hookenv.status_set('maintenance','creating user')
     host.adduser(config['couch-user'],password=r''''''.join([random.choice(string.printable) for _ in range(random.randint(8, 12)) if _ != '\\']),shell='/bin/False',home_dir='/home/{}'.format(config['couch-user']))
-    #host.adduser(config['couch-user'],home_dir='/home/'+config['couch-user'])
-    #shutil.chown('/home/{}/'.format(config['couch-user']),user=config['couch-user'],group=config['couch-user'])
     hookenv.status_set('maintenance','installing dependencies')
     fetch.apt_update()
     fetch.apt_install(['git','python2.7','python-openssl','python-lxml'])
