@@ -1,0 +1,6 @@
+start:
+  description: Start couchpotato service
+stop:
+  description: Stop couchpotato service
+restart:
+  description: Restart couchpotato service

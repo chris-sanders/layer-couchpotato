@@ -1,0 +1,4 @@
+#!/bin/bash
+
+systemctl restart couchpotato.service
+juju-log -l "INFO" couchpotato restarted
