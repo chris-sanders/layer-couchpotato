@@ -13,6 +13,7 @@ import string
 import tarfile
 import libcouch
 import socket
+import time
 
 @when_not('couchpotato.installed')
 def install_couchpotato():
@@ -69,7 +70,7 @@ def setup_config():
             return
     else:
         host.service_start('couchpotato.service')
-        configFile = Path('/home/{}/.config/settings.conf'.format(config['couch-user']))
+        configFile = Path('/home/{}/.couchpotato/settings.conf'.format(config['couch-user']))
         while not configFile.is_file():
             time.sleep(1)
         # TODO: Modify config via library function
