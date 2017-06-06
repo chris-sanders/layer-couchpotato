@@ -4,6 +4,7 @@ from charmhelpers.core import host
 from charmhelpers.core import hookenv
 from charmhelpers.core import templating
 from pathlib import Path
+from libcouch import CouchInfo
 
 import os
 import subprocess
@@ -15,30 +16,31 @@ import libcouch
 import socket
 import time
 
+cp = CouchInfo()
+
 @when_not('couchpotato.installed')
 def install_couchpotato():
-    config = hookenv.config()
+    #config = hookenv.config()
     hookenv.status_set('maintenance','creating user')
-    characters = string.ascii_letters + string.digits
-    host.adduser(config['couch-user'],password="",shell='/bin/False',home_dir='/home/{}'.format(config['couch-user']))
-    #host.adduser(config['couch-user'],password=r''''''.join([random.choice(characters) for _ in range(random.randint(8, 12))]),shell='/bin/False',home_dir='/home/{}'.format(config['couch-user']))
+    #characters = string.ascii_letters + string.digits
+    host.adduser(cp.user,password="",shell='/bin/False',home_dir=cp.home_dir)
+    #host.adduser(config['couch-user'],password="",shell='/bin/False',home_dir='/home/{}'.format(config['couch-user']))
     hookenv.status_set('maintenance','installing dependencies')
     fetch.apt_update()
     fetch.apt_install(['git','python2.7','python-openssl','python-lxml'])
     
     hookenv.status_set('maintenance','cloning repository')
-    installPath = "/home/{}/CouchPotatoServer".format(config['couch-user'])
-    if os.path.isdir(installPath):
-        shutil.rmtree(installPath) 
-    #subprocess.check_call(["git clone https://github.com/CouchPotato/CouchPotatoServer.git /home/{}/CouchPotatoServer".format(config['couch-user'])],shell=True)
-    subprocess.check_call(["git clone https://github.com/CouchPotato/CouchPotatoServer.git "+installPath],shell=True)
-    host.chownr('/home/{}'.format(config['couch-user']),owner=config['couch-user'],group=config['couch-user'])
-    context = {'couchpath':'/home/{}/CouchPotatoServer/CouchPotato.py'.format(config['couch-user']),
-               'couchuser':config['couch-user']}
-    templating.render('couchpotato.service','/etc/systemd/system/couchpotato.service',context) 
-    #os.chmod('/home/{}'.format(['couch-user']),0o600)
-    subprocess.check_call('systemctl enable couchpotato.service',shell=True)
-    hookenv.open_port(config['port'],'TCP')
+    #installPath = "/home/{}/CouchPotatoServer".format(config['couch-user'])
+    if os.path.isdir(cp.install_dir):
+        shutil.rmtree(cp.install_dir) 
+    subprocess.check_call(["git clone https://github.com/CouchPotato/CouchPotatoServer.git " + cp.install_dir],shell=True)
+    host.chownr(cp.home_dir,owner=cp.user,group=cp.user)
+    context = {'couchpath':cp.executable,
+               'couchuser':cp.user}
+    templating.render(cp.service_name,'/etc/systemd/system/{}'.format(cp.service_name),context) 
+    cp.enable()
+    #subprocess.check_call('systemctl enable {}'.format(cp.service_name),shell=True)
+    hookenv.open_port(cp.charm_config['port'],'TCP')
     set_state('couchpotato.installed')
     hookenv.status_set('maintenance','installation complete')
 
