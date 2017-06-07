@@ -73,3 +73,12 @@ def setup_config():
     cp.start()
     hookenv.status_set('active','')
     set_state('couchpotato.configured')
+
+@when_not('usenet-downloader.configured')
+@when_all('usenet-downloader.triggered','usenet-downloader.available','couchpotato.configured')
+def configure_downloader(usenetdownloader,*args):
+    hookenv.log("Setting up sabnzbd relation","INFO") 
+    cp.stop()
+    cp.configure_sabnzbd(host=usenetdownloader.hostname(),port=usenetdownloader.port(),api_key=usenetdownloader.apikey())
+    cp.start()
+    usenetdownloader.configured()

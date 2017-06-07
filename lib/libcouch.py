@@ -54,3 +54,8 @@ class CouchInfo:
     def enable(self):
         subprocess.check_call('systemctl enable {}'.format(self.service_name),shell=True)
         hookenv.log("Couchpotato service enabled",'INFO')
+
+    def configure_sabnzbd(self,host,port,api_key):
+        self.couch_config['sabnzbd']['host'] = '{}:{}'.format(host,port)
+        self.couch_config['sabnzbd']['api_key'] = api_key
+        self.save_config()
