@@ -55,6 +55,7 @@ def setup_config():
             with tarfile.open(backup_file,'r:gz') as inFile:
                 inFile.extractall(cp.config_dir)
             host.chownr(cp.home_dir,owner=cp.user,group=cp.user)
+            cp.reload_config() 
             cp.set_indexers(False)
         else:
             hookenv.log("Add couchconfig resource, see juju attach or disable restore-config",'ERROR')
@@ -65,7 +66,7 @@ def setup_config():
         while not Path(cp.settings_file).is_file():
             time.sleep(1)
         cp.stop()
-    cp.reload_config() # Necessary because the on-disk configuration changed and I'm loading config globally for now
+        cp.reload_config()
     cp.set_host(socket.getfqdn()) # This could use the config parameter and not require checking
     cp.set_port()
     cp.save_config()
