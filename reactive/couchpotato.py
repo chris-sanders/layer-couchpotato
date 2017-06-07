@@ -20,17 +20,13 @@ cp = CouchInfo()
 
 @when_not('couchpotato.installed')
 def install_couchpotato():
-    #config = hookenv.config()
     hookenv.status_set('maintenance','creating user')
-    #characters = string.ascii_letters + string.digits
     host.adduser(cp.user,password="",shell='/bin/False',home_dir=cp.home_dir)
-    #host.adduser(config['couch-user'],password="",shell='/bin/False',home_dir='/home/{}'.format(config['couch-user']))
     hookenv.status_set('maintenance','installing dependencies')
     fetch.apt_update()
     fetch.apt_install(['git','python2.7','python-openssl','python-lxml'])
     
     hookenv.status_set('maintenance','cloning repository')
-    #installPath = "/home/{}/CouchPotatoServer".format(config['couch-user'])
     if os.path.isdir(cp.install_dir):
         shutil.rmtree(cp.install_dir) 
     subprocess.check_call(["git clone https://github.com/CouchPotato/CouchPotatoServer.git " + cp.install_dir],shell=True)
@@ -39,7 +35,6 @@ def install_couchpotato():
                'couchuser':cp.user}
     templating.render(cp.service_name,'/etc/systemd/system/{}'.format(cp.service_name),context) 
     cp.enable()
-    #subprocess.check_call('systemctl enable {}'.format(cp.service_name),shell=True)
     hookenv.open_port(cp.charm_config['port'],'TCP')
     set_state('couchpotato.installed')
     hookenv.status_set('maintenance','installation complete')
@@ -49,36 +44,31 @@ def install_couchpotato():
 def setup_config():
     hookenv.status_set('maintenance','configuring')
     backups = './backups'
-    config = hookenv.config()
-    if config['restore-config']:
+    if cp.charm_config['restore-config']:
         try:
             os.mkdir(backups)
         except OSError as e:
             if e.errno is 17:
               pass
-        backupFile = hookenv.resource_get('couchconfig')
-        if backupFile:
-            with tarfile.open(backupFile,'r:gz') as inFile:
-                inFile.extractall('/home/{}/.couchpotato'.format(config['couch-user']))
-            host.chownr('/home/{}'.format(config['couch-user']),owner=config['couch-user'],group=config['couch-user'])
-            # TODO: Modify config via library function
-            libcouch.set_indexers(False)
-            #libcouch.set_host(socket.getfqdn())
-            #libcouch.set_port(config['port'])
-            #host.service_start('couchpotato.service')
+        backup_file = hookenv.resource_get('couchconfig')
+        if backup_file:
+            with tarfile.open(backup_file,'r:gz') as inFile:
+                inFile.extractall(cp.config_dir)
+            host.chownr(cp.home_dir,owner=cp.user,group=cp.user)
+            cp.set_indexers(False)
         else:
             hookenv.log("Add couchconfig resource, see juju attach or disable restore-config",'ERROR')
-            status_set('blocked','Waiting on sabconfig resource')
+            status_set('blocked','Waiting on couchconfig resource')
             return
     else:
-        host.service_start('couchpotato.service')
-        configFile = Path('/home/{}/.couchpotato/settings.conf'.format(config['couch-user']))
-        while not configFile.is_file():
+        cp.start()
+        while not Path(cp.settings_file).is_file():
             time.sleep(1)
-        # TODO: Modify config via library function
-        host.service_stop('couchpotato.service')
-    libcouch.set_host(socket.getfqdn())
-    libcouch.set_port(config['port'])
-    host.service_start('couchpotato.service') 
+        cp.stop()
+    cp.reload_config() # Necessary because the on-disk configuration changed and I'm loading config globally for now
+    cp.set_host(socket.getfqdn()) # This could use the config parameter and not require checking
+    cp.set_port()
+    cp.save_config()
+    cp.start()
     hookenv.status_set('active','')
     set_state('couchpotato.configured')

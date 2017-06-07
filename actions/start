@@ -1,4 +1,9 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
-systemctl start couchpotato.service
-juju-log -l "INFO" couchpotato started
+import sys
+sys.path.append('lib')
+
+from libcouch import CouchInfo
+
+cp = CouchInfo()
+cp.start()

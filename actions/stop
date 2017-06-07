@@ -1,4 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env python3
 
-systemctl stop couchpotato.service
-juju-log -l "INFO" couchpotato stopped
+import sys
+sys.path.append('lib')
+
+from libcouch import CouchInfo
+
+cp = CouchInfo()
+cp.stop()
+
