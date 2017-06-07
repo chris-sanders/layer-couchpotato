@@ -3,6 +3,7 @@ from charmhelpers.core import host
 
 import configparser
 import subprocess
+import socket
 
 class CouchInfo:
     def __init__(self):
@@ -58,4 +59,13 @@ class CouchInfo:
     def configure_sabnzbd(self,host,port,api_key):
         self.couch_config['sabnzbd']['host'] = '{}:{}'.format(host,port)
         self.couch_config['sabnzbd']['api_key'] = api_key
+        self.save_config()
+
+    def configure_plex(self,host,port,user=None,passwd=None):
+        self.couch_config['plex']['media_server'] = host
+        self.couch_config['plex']['host'] = socket.getfqdn()
+        if user:
+            self.couch_config['plex']['username'] = user
+        if passwd:
+            self.couch_config['plex']['password'] = passwd
         self.save_config()

@@ -15,12 +15,8 @@ resources:
     type: file
     filename: couchconfig.tgz
     description: "Tar file of configuration folder to restore on install"
-#provides:
-#  provides-relation:
-#    interface: interface-name
 requires:
   usenet-downloader:
     interface: usenet-downloader
-#peers:
-#  peer-relation:
-#    interface: interface-name
+  plex-info:
+    interface: plex-info

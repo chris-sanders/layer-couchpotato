@@ -82,3 +82,12 @@ def configure_downloader(usenetdownloader,*args):
     cp.configure_sabnzbd(host=usenetdownloader.hostname(),port=usenetdownloader.port(),api_key=usenetdownloader.apikey())
     cp.start()
     usenetdownloader.configured()
+
+@when_not('plex-info.configured')
+@when_all('plex-info.triggered','plex-info.available','couchpotato.configured')
+def configure_plex(plexinfo,*args):
+    hookenv.log("Setting up plex notification","INFO")
+    cp.stop()
+    cp.configure_plex(host=plexinfo.hostname(),port=plexinfo.port(),user=plexinfo.user(),passwd=plexinfo.passwd())
+    cp.start()
+    plexinfo.configured()
