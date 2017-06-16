@@ -91,3 +91,28 @@ def configure_plex(plexinfo,*args):
     cp.configure_plex(host=plexinfo.hostname(),port=plexinfo.port(),user=plexinfo.user(),passwd=plexinfo.passwd())
     cp.start()
     plexinfo.configured()
+
+@when('couchpotato.configured')
+@when('website.available')
+def configure_proxy(website):
+    import yaml
+
+    services = [{ "service_name": "couchpotato",
+                  "service_host": "0.0.0.0",
+                  "service_port": 80 ,
+                  "service_options": ["mode http",
+                                      "acl couch_path path_beg -i /couchpotato",
+                                      "use_backend couch_back if couch_path",
+                                      "option httpchk GET / HTTP/1.0"
+                                     ],
+                  "servers" : [["ditry_hack","127.0.0.1","0","disabled"]],
+                  "backends" : [{"backend_name":"couch_back",
+                                "servers" : [["couch_server",
+                                               socket.getfqdn(),
+                                               cp.charm_config['port'], 
+                                               "check"]
+                                            ]
+                               }]
+               }]
+    website.set_remote("services",yaml.dump(services))
+    hookenv.log("Set services file: \n{}".format(yaml.dump(services)))
