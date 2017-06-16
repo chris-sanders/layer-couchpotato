@@ -91,3 +91,17 @@ def configure_plex(plexinfo,*args):
     cp.configure_plex(host=plexinfo.hostname(),port=plexinfo.port(),user=plexinfo.user(),passwd=plexinfo.passwd())
     cp.start()
     plexinfo.configured()
+
+@when_all('reverseproxy.triggered','reverseproxy.ready')
+@when_not('reverseproxy.configured')
+def configure_reverseproxy(reverseproxy,*args):
+    hookenv.log("Setting up reverseproxy", "INFO")
+    proxy_info = {'urlbase':'/couchpotato',
+                 'subdomain':'couchpotato',
+                 'external_port': 80,
+                 'internal_host': socket.getfqdn(),
+                 'internal_port': cp.charm_config['port']
+                } 
+    reverseproxy.configure(proxy_info)
+
+
