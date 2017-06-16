@@ -9,5 +9,5 @@ options:
     description: "Port that couchpotato listens to"
   restore-config:
     type: boolean
-    deafult: False
+    default: False
     description: "Restore configuration from backup resource"

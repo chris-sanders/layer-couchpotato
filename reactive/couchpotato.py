@@ -59,7 +59,7 @@ def setup_config():
             cp.set_indexers(False)
         else:
             hookenv.log("Add couchconfig resource, see juju attach or disable restore-config",'ERROR')
-            status_set('blocked','Waiting on couchconfig resource')
+            hookenv.status_set('blocked','Waiting on couchconfig resource')
             return
     else:
         cp.start()
