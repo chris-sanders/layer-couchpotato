@@ -69,3 +69,7 @@ class CouchInfo:
         if passwd:
             self.couch_config['plex']['password'] = passwd
         self.save_config()
+
+    def set_urlbase(self,urlbase):
+        self.couch_config['core']['url_base'] = urlbase
+        self.save_config()

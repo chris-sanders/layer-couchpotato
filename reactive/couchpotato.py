@@ -101,7 +101,8 @@ def configure_reverseproxy(reverseproxy,*args):
                  'external_port': 80,
                  'internal_host': socket.getfqdn(),
                  'internal_port': cp.charm_config['port']
-                } 
+                 } 
     reverseproxy.configure(proxy_info)
-
+    cp.set_urlbase(proxy_info['urlbase'])
+    cp.restart()
 
