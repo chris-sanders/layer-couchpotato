@@ -95,6 +95,8 @@ def configure_plex(plexinfo,*args):
 @when_all('reverseproxy.triggered','reverseproxy.ready')
 @when_not('reverseproxy.configured')
 def configure_reverseproxy(reverseproxy,*args):
+    # TODO: get values from charm config
+    # TODO: retrigger if charm or couch config change
     hookenv.log("Setting up reverseproxy", "INFO")
     proxy_info = {'urlbase':'/couchpotato',
                  'subdomain':'couchpotato',
