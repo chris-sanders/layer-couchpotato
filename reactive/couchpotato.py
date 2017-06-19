@@ -93,17 +93,18 @@ def configure_plex(plexinfo,*args):
     plexinfo.configured()
 
 @when_all('reverseproxy.triggered','reverseproxy.ready')
-@when_not('reverseproxy.configured')
+@when_not('reverseproxy.configured','reverseproxy.departed')
 def configure_reverseproxy(reverseproxy,*args):
     # TODO: get values from charm config
     # TODO: retrigger if charm or couch config change
     hookenv.log("Setting up reverseproxy", "INFO")
-    proxy_info = {'urlbase':'/couchpotato',
-                 'subdomain':'couchpotato',
-                 'external_port': 80,
-                 'internal_host': socket.getfqdn(),
-                 'internal_port': cp.charm_config['port']
-                 } 
+    proxy_info = {#'group_id':'couchpotato',
+                  'urlbase':'/couchpotato',
+                  'subdomain':'couchpotato',
+                  'external_port': 80,
+                  'internal_host': socket.getfqdn(),
+                  'internal_port': cp.charm_config['port']
+                  } 
     reverseproxy.configure(proxy_info)
     cp.set_urlbase(proxy_info['urlbase'])
     cp.restart()
