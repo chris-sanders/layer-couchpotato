@@ -98,8 +98,7 @@ def configure_reverseproxy(reverseproxy,*args):
     # TODO: get values from charm config
     # TODO: retrigger if charm or couch config change
     hookenv.log("Setting up reverseproxy", "INFO")
-    proxy_info = {#'group_id':'couchpotato',
-                  'urlbase':'/couchpotato',
+    proxy_info = {'urlbase':'/couchpotato',
                   'subdomain':'couchpotato',
                   'external_port': 80,
                   'internal_host': socket.getfqdn(),
@@ -107,5 +106,11 @@ def configure_reverseproxy(reverseproxy,*args):
                   } 
     reverseproxy.configure(proxy_info)
     cp.set_urlbase(proxy_info['urlbase'])
+    cp.restart()
+
+@when_all('reverseproxy.triggered','reverseproxy.departed')
+def remove_urlbase(reverseproxy,*args):
+    hookenv.log("Removing reverseproxy configuration", "INFO")
+    cp.set_urlbase('')
     cp.restart()
 
