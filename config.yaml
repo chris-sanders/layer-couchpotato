@@ -11,3 +11,16 @@ options:
     type: boolean
     default: False
     description: "Restore configuration from backup resource"
+  proxy-port:
+    type: int
+    default: 80
+    description: "Port to request for reverse proxy access"
+  proxy-domain:
+    type: string
+    default: "couchpotato"
+    description: "Subdomain to request from reverse proxy"
+  proxy-url:
+    type: string
+    default: "/couchpotato"
+    description: 'Urlbase for revrse proxy, must start with a "/"'
+
