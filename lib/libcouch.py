@@ -73,3 +73,14 @@ class CouchInfo:
     def set_urlbase(self,urlbase):
         self.couch_config['core']['url_base'] = urlbase
         self.save_config()
+
+    def check_port(self):
+        self.reload_config()
+        hookenv.log('couch_config port: {}'.format(self.couch_config['core']['port']),'DEBUG')
+        hookenv.log(type(self.couch_config['core']['port']),'DEBUG')
+        hookenv.log('charm_port: {}'.format(self.charm_config['port']),'DEBUG')
+        hookenv.log(type(self.charm_config['port']), 'DEBUG')
+        if self.couch_config['core']['port'] != str(self.charm_config['port']):
+            hookenv.log('Updating charm_config','DEBUG')
+            self.charm_config['port'] = int(self.couch_config['core']['port'])
+
