@@ -124,25 +124,19 @@ def remove_urlbase(reverseproxy, *args):
 @when('config.changed.port')
 def update_port():
     # During install settings start at 'None' and you can't close None/TCP
-    if cp.charm_config.previous('port') is not None and \
-            cp.charm_config.previous('port') != cp.charm_config['port']:
-            # TODO: This check fails reporting the same port in both below print statements
-        hookenv.log('Closing port: {}'.format(cp.charm_config.previous('port')), "DEBUG")
+    if cp.charm_config.previous('port') is not None:
+        # TODO: Remove this, test as it doesn't appear to be needed
+        # if cp.charm_config.previous('port') is not None and \
+        #        cp.charm_config.previous('port') != cp.charm_config['port']:
+        hookenv.log('Closing port: {}'.format(cp.charm_config.previous('port')), "INFO")
         hookenv.close_port(cp.charm_config.previous('port'))
-        hookenv.log('Opening port: {}'.format(cp.charm_config['port']), "DEBUG")
+        hookenv.log('Opening port: {}'.format(cp.charm_config['port']), "INFO")
         hookenv.open_port(cp.charm_config['port'])
         cp.set_port()
         cp.save_config()
 
-# @when_file_changed(cp.settings_file)
-# def config_file_changed():
-#     hookenv.log('Config file changed, checking settings', 'INFO')
-#     hookenv.log('couch_config port: {}'.format(cp.couch_config['core']['port']),'DEBUG')
-#     hookenv.log(type(cp.couch_config['core']['port']),'DEBUG')
-#     hookenv.log('charm_port: {}'.format(cp.charm_config['port']),'DEBUG')
-#     hookenv.log(type(cp.charm_config['port']), 'DEBUG')
-#     if cp.couch_config['core']['port'] != str(cp.charm_config['port']):
-#         hookenv.log('Updating charm_config','DEBUG')
-#         cp.charm_config['port'] = int(cp.couch_config['core']['port'])
-#         update_port()
-#     # cp.check_port()
+
+@when_file_changed(cp.settings_file)
+def config_file_changed():
+    cp.check_port()
+    
