@@ -1,5 +1,6 @@
 from charmhelpers.core import hookenv
 from charmhelpers.core import host 
+from crontab import CronTab
 
 import configparser
 import subprocess
@@ -116,4 +117,28 @@ class CouchInfo:
                 os.remove(os.path.join(self.charm_config['backup-location'], file))
         else:
             hookenv.log('Skipping backup pruning', 'INFO')
-        
+
+    def create_backup_cron(self):
+        self.remove_backup_cron(log=False)
+        system_cron = CronTab(user='root')
+        unit = hookenv.local_unit()
+        directory = hookenv.charm_dir()
+        action = directory + '/actions/backup' 
+        command = "juju-run {unit} {action}".format(unit=unit, action=action)
+        job = system_cron.new(command=command, comment="couchpotato backup")
+        job.setall(self.charm_config['backup-cron'])
+        system_cron.write()
+        hookenv.log("Backup created for: {}".format(self.charm_config['backup-cron']))
+    
+    def remove_backup_cron(self, log=True):
+        system_cron = CronTab(user='root')
+        try:
+            job = next(system_cron.find_comment("couchpotato backup"))
+            system_cron.remove(job)
+            system_cron.write()
+            if log:
+                hookenv.log("Removed backup cron.", 'INFO')
+        except StopIteration:
+            if log:
+                hookenv.log("Backup removal called, but cron not present.", 'WARNING')
+

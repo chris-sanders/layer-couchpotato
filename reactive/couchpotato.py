@@ -1,4 +1,4 @@
-from charms.reactive import when, when_all, when_not, when_file_changed, set_state
+from charms.reactive import when, when_all, when_any, when_not, when_file_changed, set_state
 from charmhelpers import fetch
 from charmhelpers.core import host
 from charmhelpers.core import hookenv
@@ -136,4 +136,21 @@ def update_port():
 @when_file_changed(cp.settings_file)
 def config_file_changed():
     cp.check_port()
-    
+
+
+@when('couchpotato.installed')
+@when_not('cron.installed')
+def setup_backup_cron():
+    if cp.charm_config['backup-location'] != '':
+        cp.create_backup_cron()
+    set_state('cron.installed')
+
+
+@when_any('config.changed.backup-location', 'config.changed.backup-cron')
+@when('cron.installed')
+def update_backup_cron():
+    if cp.charm_config['backup-location'] == '':
+        cp.remove_backup_cron()
+    else:
+        cp.create_backup_cron()
+
