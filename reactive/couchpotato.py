@@ -9,10 +9,7 @@ from libcouch import CouchInfo
 import os
 import subprocess
 import shutil
-# import random
-# import string
 import tarfile
-# import libcouch
 import socket
 import time
 

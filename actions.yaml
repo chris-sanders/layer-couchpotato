@@ -4,3 +4,5 @@ stop:
   description: Stop couchpotato service
 restart:
   description: Restart couchpotato service
+backup:
+  description: Backup couchpotato settings

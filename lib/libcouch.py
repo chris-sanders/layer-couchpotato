@@ -4,6 +4,9 @@ from charmhelpers.core import host
 import configparser
 import subprocess
 import socket
+import tarfile
+import os
+import datetime
 
 
 class CouchInfo:
@@ -14,8 +17,9 @@ class CouchInfo:
         self.install_dir = self.home_dir + '/CouchPotatoServer'
         self.executable = self.install_dir + '/CouchPotato.py'
         self.config_dir = self.home_dir + '/.couchpotato'
-        self.service_name = 'couchpotato.service'
+        self.database_dir = self.config_dir + '/database'
         self.settings_file = self.home_dir + '/.couchpotato/settings.conf'
+        self.service_name = 'couchpotato.service'
         self.couch_config = configparser.ConfigParser()
         self.couch_config.read(self.settings_file)
 
@@ -87,3 +91,29 @@ class CouchInfo:
             self.set_port()
             self.save_config()
 
+    def backup(self):
+        hookenv.log('Creating backup', 'INFO')
+        backup_file = self.charm_config['backup-location'] + '/couchback-{}.tgz'.format(datetime.datetime.now())
+        backup_file = backup_file.replace(':', '-')
+        try:
+            os.mkdir(self.charm_config['backup-location'])
+        except FileExistsError:
+            pass
+
+        with tarfile.open(backup_file, 'x:gz') as outFile:
+            outFile.add(self.database_dir, arcname=self.database_dir.split('/')[-1])
+            outFile.add(self.settings_file, arcname=self.settings_file.split('/')[-1])
+
+        # Clean up backups
+        if self.charm_config['backup-count'] > 0:
+            hookenv.log('Pruning files in {}'.format(self.charm_config['backup-location']), 'INFO')
+
+            def mtime(x): 
+                return os.stat(os.path.join(self.charm_config['backup-location'], x)).st_mtime 
+            sortedFiles = sorted(os.listdir(self.charm_config['backup-location']), key=mtime)
+            deleteCount = max(len(sortedFiles) - self.charm_config['backup-count'], 0)
+            for file in sortedFiles[0:deleteCount]:
+                os.remove(os.path.join(self.charm_config['backup-location'], file))
+        else:
+            hookenv.log('Skipping backup pruning', 'INFO')
+        
