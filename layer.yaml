@@ -4,5 +4,5 @@ options:
   backup:
     backup-name: "couchpotato"
     backup-files: >-
-      /home/{couch-user}/.couchpotato/settings.conf,
+      /home/{couch-user}/.couchpotato/settings.conf
       /home/{couch-user}/.couchpotato/database
