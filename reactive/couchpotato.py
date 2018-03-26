@@ -23,15 +23,15 @@ def install_couchpotato():
     hookenv.status_set('maintenance', 'installing dependencies')
     fetch.apt_update()
     fetch.apt_install(['git', 'python2.7', 'python-openssl', 'python-lxml'])
-    
+
     hookenv.status_set('maintenance', 'cloning repository')
     if os.path.isdir(cp.install_dir):
-        shutil.rmtree(cp.install_dir) 
+        shutil.rmtree(cp.install_dir)
     subprocess.check_call(["git clone https://github.com/CouchPotato/CouchPotatoServer.git " + cp.install_dir], shell=True)
     host.chownr(cp.home_dir, owner=cp.user, group=cp.user)
     context = {'couchpath': cp.executable,
                'couchuser': cp.user}
-    templating.render(cp.service_name, '/etc/systemd/system/{}'.format(cp.service_name), context) 
+    templating.render(cp.service_name, '/etc/systemd/system/{}'.format(cp.service_name), context)
     cp.enable()
     hookenv.open_port(cp.charm_config['port'], 'TCP')
     set_state('couchpotato.installed')
@@ -54,7 +54,7 @@ def setup_config():
             with tarfile.open(backup_file, 'r:gz') as inFile:
                 inFile.extractall(cp.config_dir)
             host.chownr(cp.home_dir, owner=cp.user, group=cp.user)
-            cp.reload_config() 
+            cp.reload_config()
             cp.set_indexers(False)
         else:
             hookenv.log("Add couchconfig resource, see juju attach or disable restore-config", 'ERROR')
@@ -77,7 +77,7 @@ def setup_config():
 @when_not('usenet-downloader.configured')
 @when_all('usenet-downloader.triggered', 'usenet-downloader.available', 'couchpotato.configured')
 def configure_downloader(usenetdownloader, *args):
-    hookenv.log("Setting up sabnzbd relation", "INFO") 
+    hookenv.log("Setting up sabnzbd relation", "INFO")
     cp.stop()
     cp.configure_sabnzbd(host=usenetdownloader.hostname(), port=usenetdownloader.port(), api_key=usenetdownloader.apikey())
     cp.start()
@@ -105,7 +105,7 @@ def configure_reverseproxy(reverseproxy, *args):
                   'external_port': cp.charm_config['proxy-port'],
                   'internal_host': socket.getfqdn(),
                   'internal_port': cp.charm_config['port']
-                  } 
+                  }
     reverseproxy.configure(proxy_info)
     cp.set_urlbase(proxy_info['urlbase'])
     cp.restart()
@@ -122,9 +122,6 @@ def remove_urlbase(reverseproxy, *args):
 def update_port():
     # During install settings start at 'None' and you can't close None/TCP
     if cp.charm_config.previous('port') is not None:
-        # TODO: Remove this, test as it doesn't appear to be needed
-        # if cp.charm_config.previous('port') is not None and \
-        #        cp.charm_config.previous('port') != cp.charm_config['port']:
         hookenv.log('Closing port: {}'.format(cp.charm_config.previous('port')), "INFO")
         hookenv.close_port(cp.charm_config.previous('port'))
         hookenv.log('Opening port: {}'.format(cp.charm_config['port']), "INFO")
@@ -136,4 +133,3 @@ def update_port():
 @when_file_changed(cp.settings_file)
 def config_file_changed():
     cp.check_port()
-

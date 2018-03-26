@@ -1,5 +1,5 @@
 from charmhelpers.core import hookenv
-from charmhelpers.core import host 
+from charmhelpers.core import host
 
 import configparser
 import subprocess
@@ -87,4 +87,3 @@ class CouchInfo:
                         'changed via couchpotato', 'WARNING')
             self.set_port()
             self.save_config()
-
