@@ -101,7 +101,7 @@ def configure_reverseproxy(reverseproxy, *args):
     hookenv.log("Setting up reverseproxy", "INFO")
     proxy_info = {'urlbase': cp.charm_config['proxy-url'],
                   'subdomain': cp.charm_config['proxy-domain'],
-                  'group_id': 'couchpotato',
+                  'group_id': cp.charm_config['proxy-group'],
                   'external_port': cp.charm_config['proxy-port'],
                   'internal_host': socket.getfqdn(),
                   'internal_port': cp.charm_config['port']
