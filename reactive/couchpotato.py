@@ -70,7 +70,7 @@ def setup_config():
     cp.set_port()
     cp.save_config()
     cp.start()
-    hookenv.status_set('active', '')
+    hookenv.status_set('active', 'Couchpotato is ready')
     set_state('couchpotato.configured')
 
 
