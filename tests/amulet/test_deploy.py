@@ -45,7 +45,7 @@ class TestCouchpotato():
         page = requests.get('http://{}:{}'.format(couchpotato.info['public-address'], 5050))
         assert page.status_code == 200
         deploy.relate('couchpotato:reverseproxy', 'haproxy:reverseproxy')
-        time.sleep(10)
+        time.sleep(15)
         page = requests.get('http://{}:{}/couchpotato'.format(haproxy.info['public-address'], 80))
         assert page.status_code == 200
 
