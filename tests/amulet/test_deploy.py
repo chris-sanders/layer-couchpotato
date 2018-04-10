@@ -50,7 +50,7 @@ class TestCouchpotato():
         assert page.status_code == 200
 
     def test_actions(self, deploy, couchpotato):
-        for action in couchpotato.get_defined():
+        for action in couchpotato.action_defined():
             uuid = couchpotato.run_action(action)
             action_output = deploy.get_action_output(uuid, full_output=True)
             print(action_output)
