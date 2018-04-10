@@ -54,7 +54,10 @@ class TestCouchpotato():
             uuid = couchpotato.run_action(action)
             action_output = deploy.get_action_output(uuid, full_output=True)
             print(action_output)
-            assert action_output['status'] == 'completed'
+            if action == 'backup':
+                assert action_output['message'] == 'No backup-location set'
+            else:
+                assert action_output['status'] == 'completed'
 
     # def test_action_stop(self, deploy, couchpotato):
     #     uuid = couchpotato.run_action('stop')
