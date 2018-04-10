@@ -58,7 +58,8 @@ class TestCouchpotato():
                 assert action_output['message'] == 'No backup-location set'
             else:
                 assert action_output['status'] == 'completed'
-
+        # Restart so it's running not part of the test
+        couchpotato.run_action('start')
     # def test_action_stop(self, deploy, couchpotato):
     #     uuid = couchpotato.run_action('stop')
     #     action_output = deploy.get_action_output(uuid, full_output=True)
