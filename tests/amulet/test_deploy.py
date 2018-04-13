@@ -12,7 +12,8 @@ def deploy():
     deploy.add('haproxy', charm='~chris.sanders/haproxy')
     deploy.expose('haproxy')
     deploy.add('couchpotato')
-    deploy.configure('couchpotato', {'proxy-port': 80})
+    deploy.configure('couchpotato', {'proxy-port': 80,
+                                     'backup-location': '/tmp/couchpotato'})
     deploy.setup(timeout=900)
     deploy.sentry.wait()
     return deploy
@@ -54,27 +55,9 @@ class TestCouchpotato():
             uuid = couchpotato.run_action(action)
             action_output = deploy.get_action_output(uuid, full_output=True)
             print(action_output)
-            if action == 'backup':
-                assert action_output['message'] == 'No backup-location set'
-            else:
-                assert action_output['status'] == 'completed'
+            assert action_output['status'] == 'completed'
         # Restart so it's running not part of the test
         couchpotato.run_action('start')
-    # def test_action_stop(self, deploy, couchpotato):
-    #     uuid = couchpotato.run_action('stop')
-    #     action_output = deploy.get_action_output(uuid, full_output=True)
-    #     print(action_output)
-    #     assert action_output['status'] == 'completed'
-
-    # def test_action_start(self, deploy, couchpotato):
-    #     uuid = couchpotato.run_action('start')
-    #     action_output = deploy.get_action_output(uuid, full_output=True)
-    #     print(action_output)
-
-    # def test_action_restart(self, deploy, couchpotato):
-    #     uuid = couchpotato.run_action('restart')
-    #     action_output = deploy.get_action_output(uuid, full_output=True)
-    #     print(action_output)
 
     #     # test we can access over http
     #     # page = requests.get('http://{}'.format(self.unit.info['public-address']))
