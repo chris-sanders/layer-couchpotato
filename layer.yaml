@@ -3,6 +3,6 @@ repo: git@github.com:chris-sanders/layer-couchpotato.git
 options:
   backup:
     backup-name: "couchpotato"
-    backup-files: >-
+    backup-files: |-
       /home/{couch-user}/.couchpotato/settings.conf
       /home/{couch-user}/.couchpotato/database
